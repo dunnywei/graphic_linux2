@@ -16,5 +16,4 @@ TEMPLATE = app
 SOURCES += main.cpp \
     test2_oglwidget.cpp
 
-HEADERS += \
-    test2_oglwidget.h
+HEADERS += test2_oglwidget.h

@@ -1,23 +1,38 @@
 #ifndef TEST2_OGLWIDGET_H
 #define TEST2_OGLWIDGET_H
 
-#include<GL/glew.h>
-#include <GL/glu.h>
-#include <GL/gl.h>
+#include<QOpenGLWindow>
+#include <QOpenGLFunctions>
 
-#include <QWidget>
-#include <QOpenGLWidget>
+//class test2_oglwidget:public QOpenGLWindow,protected QOpenGLFunctions
 
-
-class test2_oglwidget:public QOpenGLWidget
+class test2_oglwidget:public QOpenGLWindow
 {
+   Q_OBJECT
 public:
-    test2_oglwidget(QWidget *parent = 0);
+
+    test2_oglwidget();
+
     ~test2_oglwidget();
-protected:
+
+
     void initializeGL();
-    void resizeGL(int w, int h);
     void paintGL();
+    void resizeGL(int w, int h);
+
+    void paintOverGL();
+    void paintUnderGL();
+
+    void paintEvent(QPaintEvent *event);
+    void resizeEvent(QResizeEvent *event);
+protected slots:
+    void teardownGL();
+
+private:
+    void printContextInformation();
+
+
+    
 
 };
 
