@@ -1,129 +1,105 @@
 #include "test2_oglwidget.h"
-#include <QDebug>
-#include <QString>
 
 
-test2_oglwidget::test2_oglwidget()
+#include <QtCore/QCoreApplication>
+
+#include <QtGui/QOpenGLContext>
+#include <QtGui/QOpenGLPaintDevice>
+#include <QtGui/QPainter>
+
+OpenGLWindow::OpenGLWindow(QWindow *parent)
+    : QWindow(parent)
+    , m_animating(false)
+    , m_context(0)
+    , m_device(0)
 {
-
+    setSurfaceType(QWindow::OpenGLSurface);
 }
 
-test2_oglwidget::~test2_oglwidget()
+OpenGLWindow::~OpenGLWindow()
 {
-   this->makeCurrent();
-   this->teardownGL();
+    delete m_device;
+}
+void OpenGLWindow::render(QPainter *painter)
+{
+    Q_UNUSED(painter);
 }
 
-void test2_oglwidget::initializeGL()
+void OpenGLWindow::initialize()
 {
-    /*
-    GLfloat verts[]=
-    {
-            +0.0f, +100.0f,
-            -100.0f,-100.0f,
-            +100.0f,-100.0f,
-     };
-     GLuint mybufferID;
-     glGenBuffers(1, &mybufferID);
-     glBindBuffer(GL_ARRAY_BUFFER, mybufferID);
-     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-
-     glEnableVertexAttribArray(0);//first attribute
-     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-     */
-
-     // Initialize OpenGL Backend
-
-     initializeOpenGLFunctions();
-     connect(context(), SIGNAL(aboutToBeDestroyed()), this, SLOT(teardownGL()), Qt::DirectConnection);
-     printContextInformation();
-
-     // Set global information
-     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-
 }
 
-void test2_oglwidget::paintGL()
+void OpenGLWindow::render()
 {
-    /*
-    QSize viewport_size = size();
-    glViewport(0, 0, viewport_size.width(), viewport_size.height());
+    if (!m_device)
+        m_device = new QOpenGLPaintDevice;
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    */
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    m_device->setSize(size());
 
+    QPainter painter(m_device);
+    render(&painter);
 }
 
-void test2_oglwidget::resizeGL(int w, int h)
+void OpenGLWindow::renderLater()
 {
-    /*
-    glViewport(0,0,w,h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45, (float)w/h, 0.01, 100.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0,0,5,0,0,0,0,1,0);
-    */
-   w=0;
-   h=0;
+    requestUpdate();
 }
 
-void test2_oglwidget::printContextInformation()
+bool OpenGLWindow::event(QEvent *event)
 {
-
-   QString glType;
-   QString glVersion;
-   QString glProfile;
-
-  // Get Version Information
-   glType = (context()->isOpenGLES()) ? "OpenGL ES" : "OpenGL";
-   glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-
-  // Get Profile Information
-   #define CASE(c) case QSurfaceFormat::c: glProfile = #c; break
-   switch (format().profile())
-   {
-       CASE(NoProfile);
-       CASE(CoreProfile);
-       CASE(CompatibilityProfile);
+    switch (event->type()) {
+    case QEvent::UpdateRequest:
+        renderNow();
+        return true;
+    default:
+        return QWindow::event(event);
     }
-    #undef CASE
-
-  // qPrintable() will print our QString w/o quotes around it.
-    qDebug() << qPrintable(glType) << qPrintable(glVersion) << "(" << qPrintable(glProfile) << ")";
-
-
 }
 
-void test2_oglwidget::paintOverGL()
+void OpenGLWindow::exposeEvent(QExposeEvent *event)
 {
+    Q_UNUSED(event);
 
+    if (isExposed())
+        renderNow();
 }
 
-void test2_oglwidget::paintUnderGL()
+void OpenGLWindow::renderNow()
 {
+    if (!isExposed())
+        return;
 
+    bool needsInitialize = false;
+
+    if (!m_context) {
+        m_context = new QOpenGLContext(this);
+        m_context->setFormat(requestedFormat());
+        m_context->create();
+
+        needsInitialize = true;
+    }
+
+    m_context->makeCurrent(this);
+
+    if (needsInitialize) {
+        initializeOpenGLFunctions();
+        initialize();
+    }
+
+    render();
+
+    m_context->swapBuffers(this);
+
+    if (m_animating)
+        renderLater();
 }
 
-
-void test2_oglwidget::teardownGL()
+void OpenGLWindow::setAnimating(bool animating)
 {
+    m_animating = animating;
 
+    if (animating)
+        renderLater();
 }
-/*
-void test2_oglwidget::paintEvent(QPaintEvent *event)
-{
-
-}
-
-void test2_oglwidget::resizeEvent(QResizeEvent *event)
-{
-
-}
-*/
-
-

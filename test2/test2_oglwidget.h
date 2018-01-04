@@ -1,37 +1,41 @@
 #ifndef TEST2_OGLWIDGET_H
 #define TEST2_OGLWIDGET_H
 
-#include<QOpenGLWindow>
-#include <QOpenGLFunctions>
+#include <QtGui/QWindow>
+#include <QtGui/QOpenGLFunctions>
 
-class test2_oglwidget:public QOpenGLWindow,protected QOpenGLFunctions
+class QPainter;
+class QOpenGLContext;
+class QOpenGLPaintDevice;
+
+class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 {
-   Q_OBJECT
+    Q_OBJECT
 public:
+    explicit OpenGLWindow(QWindow *parent = 0);
+    ~OpenGLWindow();
 
-    test2_oglwidget();
+    virtual void render(QPainter *painter);
+    virtual void render();
 
-    ~test2_oglwidget();
+    virtual void initialize();
 
+    void setAnimating(bool animating);
 
-    void initializeGL();
-    void paintGL();
-    void resizeGL(int w, int h);
+public slots:
+    void renderLater();
+    void renderNow();
 
-    void paintOverGL();
-    void paintUnderGL();
+protected:
+    bool event(QEvent *event) override;
 
-    //void paintEvent(QPaintEvent *event);
-    //void resizeEvent(QResizeEvent *event);
-protected slots:
-    void teardownGL();
+    void exposeEvent(QExposeEvent *event) override;
 
 private:
-    void printContextInformation();
+    bool m_animating;
 
-
-    
-
+    QOpenGLContext *m_context;
+    QOpenGLPaintDevice *m_device;
 };
 
 #endif // TEST2_OGLWIDGET_H
