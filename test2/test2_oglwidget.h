@@ -4,9 +4,7 @@
 #include<QOpenGLWindow>
 #include <QOpenGLFunctions>
 
-//class test2_oglwidget:public QOpenGLWindow,protected QOpenGLFunctions
-
-class test2_oglwidget:public QOpenGLWindow
+class test2_oglwidget:public QOpenGLWindow,protected QOpenGLFunctions
 {
    Q_OBJECT
 public:
@@ -23,8 +21,8 @@ public:
     void paintOverGL();
     void paintUnderGL();
 
-    void paintEvent(QPaintEvent *event);
-    void resizeEvent(QResizeEvent *event);
+    //void paintEvent(QPaintEvent *event);
+    //void resizeEvent(QResizeEvent *event);
 protected slots:
     void teardownGL();
 

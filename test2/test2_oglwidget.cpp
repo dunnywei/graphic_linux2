@@ -10,7 +10,8 @@ test2_oglwidget::test2_oglwidget()
 
 test2_oglwidget::~test2_oglwidget()
 {
-
+   this->makeCurrent();
+   this->teardownGL();
 }
 
 void test2_oglwidget::initializeGL()
@@ -32,14 +33,14 @@ void test2_oglwidget::initializeGL()
      */
 
      // Initialize OpenGL Backend
-    /*
+
      initializeOpenGLFunctions();
      connect(context(), SIGNAL(aboutToBeDestroyed()), this, SLOT(teardownGL()), Qt::DirectConnection);
      printContextInformation();
 
      // Set global information
      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-     */
+
 
 }
 
@@ -51,7 +52,7 @@ void test2_oglwidget::paintGL()
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
     */
-    //glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
 
 }
@@ -73,7 +74,7 @@ void test2_oglwidget::resizeGL(int w, int h)
 
 void test2_oglwidget::printContextInformation()
 {
-/*
+
    QString glType;
    QString glVersion;
    QString glProfile;
@@ -95,7 +96,7 @@ void test2_oglwidget::printContextInformation()
   // qPrintable() will print our QString w/o quotes around it.
     qDebug() << qPrintable(glType) << qPrintable(glVersion) << "(" << qPrintable(glProfile) << ")";
 
-*/
+
 }
 
 void test2_oglwidget::paintOverGL()
@@ -113,7 +114,7 @@ void test2_oglwidget::teardownGL()
 {
 
 }
-
+/*
 void test2_oglwidget::paintEvent(QPaintEvent *event)
 {
 
@@ -123,6 +124,6 @@ void test2_oglwidget::resizeEvent(QResizeEvent *event)
 {
 
 }
-
+*/
 
 
