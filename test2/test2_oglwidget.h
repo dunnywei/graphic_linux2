@@ -1,12 +1,13 @@
 #ifndef TEST2_OGLWIDGET_H
 #define TEST2_OGLWIDGET_H
-
 #include <QtGui/QWindow>
 #include <QtGui/QOpenGLFunctions>
+
 
 class QPainter;
 class QOpenGLContext;
 class QOpenGLPaintDevice;
+
 
 class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 {
@@ -37,5 +38,7 @@ private:
     QOpenGLContext *m_context;
     QOpenGLPaintDevice *m_device;
 };
+
+
 
 #endif // TEST2_OGLWIDGET_H
