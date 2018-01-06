@@ -5,7 +5,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 
-LIBS +=-lGLEW -lglfw -lGLEW -lGLU -lGL -lX11 -lXxf86vm -lrt -lm -pthread -lXrandr -lXinerama
+LIBS +=-lGLEW -lglfw -lglut -lGLEW -lGLU -lGL -lX11 -lXxf86vm -lrt -lm -pthread -lXrandr -lXinerama
+
 
 TARGET = test2
 CONFIG += console
