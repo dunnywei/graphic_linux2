@@ -16,6 +16,7 @@ GLFWwindow* window;
 
 // Include GLM
 #include <glm/glm.hpp>
+#include "shader.h"
 using namespace glm;
 
 
@@ -73,6 +74,9 @@ int main( void )
     glBindVertexArray(VertexArrayID);
     //end of add for tutorial 2
 
+    // Create and compile our GLSL program from the shaders
+    GLuint programID = LoadShaders( "SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader" );
+
     static const GLfloat g_vertex_buffer_data[]={
         /*
         1.0f, 0.0f, 0.0f,
@@ -98,6 +102,9 @@ int main( void )
         glClear( GL_COLOR_BUFFER_BIT );
 
         // Draw nothing, see you in tutorial 2 !
+
+        //Apply shader
+        glUseProgram(programID);
         //adding for tutorial 2
         
         glEnableVertexAttribArray(0);
@@ -127,6 +134,8 @@ int main( void )
 
     glDeleteBuffers(1,&vertexbuffer);
     glDeleteVertexArrays(1,&VertexArrayID);
+    glDeleteProgram(programID);
+
     // Close OpenGL window and terminate GLFW
     glfwTerminate();
 
