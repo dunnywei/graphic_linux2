@@ -16,6 +16,8 @@ GLFWwindow* window;
 
 // Include GLM
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+
 #include "shader.h"
 using namespace glm;
 
@@ -42,7 +44,7 @@ int main( void )
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Open a window and create its OpenGL context
-    window = glfwCreateWindow( 1024, 768, "Tutorial 01", NULL, NULL);
+    window = glfwCreateWindow( 1024, 768, "Tutorial 3", NULL, NULL);
     if( window == NULL ){
         fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
         getchar();
@@ -69,6 +71,7 @@ int main( void )
 
 
     //add for tutorial 2
+
     GLuint VertexArrayID;
     glGenVertexArrays(1,&VertexArrayID);
     glBindVertexArray(VertexArrayID);
@@ -76,7 +79,26 @@ int main( void )
 
     // Create and compile our GLSL program from the shaders
     GLuint programID = LoadShaders( "SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader" );
+   
 
+
+   //start of Tutorial 3
+
+
+
+    GLuint MatrixID=glGetUniformLocation(programID,"MVP");
+    glm::mat4 Projection=glm::perspective(glm::radians(45.0f),4.0f/3.0f,0.1f,100.0f);
+
+    glm::mat4 View=glm::lookAt(
+       glm::vec3(4,3,3),//Camera location in world sapce
+       glm::vec3(0,0,0),//look at origin
+       glm::vec3(0,1,0)//head is up to (0,1,0)
+    ); 
+    
+    glm::mat4 Model=glm::mat4(1.0f);//identity matrix
+    glm::mat4 MVP=Projection*View*Model; //It supposed to be in the oppsoite order
+
+    //end of Tutorial 3
     static const GLfloat g_vertex_buffer_data[]={
         /*
         1.0f, 0.0f, 0.0f,
@@ -105,6 +127,12 @@ int main( void )
 
         //Apply shader
         glUseProgram(programID);
+        //start of tutorial 3
+        //starts here
+        glUniformMatrix4fv(MatrixID,1,GL_FALSE,&MVP[0][0]); //send the transformation into the currently boound shader
+        //in the MVP uniform
+        //end of tutorial 3
+
         //adding for tutorial 2
         
         glEnableVertexAttribArray(0);
