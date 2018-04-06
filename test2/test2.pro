@@ -15,8 +15,6 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    test2_oglwidget.cpp \
     shader.cpp
 
-HEADERS += test2_oglwidget.h \
-    shader.h
+HEADERS += shader.h
