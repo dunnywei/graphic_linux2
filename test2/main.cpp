@@ -1,27 +1,18 @@
-//Fron now on, it will follow the guideline from OPENGL+Qt
-//->https://www.youtube.com/watch?v=6c1QYZAEP2M&list=PLRwVmtr-pp06qT6ckboaOhnm9FxmzHpbY
-//using http://www.opengl-tutorial.org/beginners-tutorials/tutorial-1-opening-a-window/ as the reference
-// Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
 
 
 
-// Include GLEW
 #include <GL/glew.h>
-//#include <GL/glut.h>
 
 
-// Include GLFW
 
 #include <GLFW/glfw3.h>
 GLFWwindow* window;
 
-// Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "shader.h"
 using namespace glm;
 
 
@@ -125,7 +116,6 @@ int main( void )
 
         glDisableVertexAttribArray(0);
         
-        //end of adding for tutorial 2
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -138,7 +128,6 @@ int main( void )
     glDeleteBuffers(1,&vertexBufferID);
     glDeleteBuffers(1,&indexBufferID);
     glDeleteVertexArrays(1,&VertexArrayID);
-    //glDeleteProgram(programID);
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();
