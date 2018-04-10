@@ -17,4 +17,4 @@ TEMPLATE = app
 SOURCES += main.cpp \
     shader.cpp
 
-HEADERS += shader.h
+HEADERS += \
