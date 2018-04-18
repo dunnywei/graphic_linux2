@@ -61,7 +61,7 @@ int main( void )
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
     // Dark blue background
-    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+    glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
 
     
@@ -73,10 +73,15 @@ int main( void )
     static const GLfloat verts[]={
         
         +0.0f, +0.0f, //0
-        -1.0f,+0.0f,//1
+        +1.0f,+0.0f,+0.0f, //For 0 vertex's color in RGB lec 9
+        +1.0f,+1.0f,//1
+        +1.0f,+0.0f,+0.0f, //For 1 vertex's color in RGB lec 9
         -1.0f,+1.0f,  //2
+        +1.0f,+0.0f,+0.0f, //For 2 vertex's color in RGB lec 9
         -1.0f,-1.0f,//3
-        -0.0f,+0.0f,//4
+        +1.0f,+0.0f,+0.0f, //For 3 vertex's color in RGB lec 9  
+        +1.0f,-1.0f,//4
+        +1.0f,+0.0f,+0.0f, //For 4 vertex's color in RGB lec 9
         
         
     };
@@ -103,16 +108,17 @@ int main( void )
 
         glBindBuffer(GL_ARRAY_BUFFER,vertexBufferID);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indexBufferID);
-        glVertexAttribPointer(
-            0,
-            2,
-            GL_FLOAT,
-            GL_FALSE,
-            0,
-            (void*)0
-        );
+        
+        glVertexAttribPointer(0, 
+                          2, //Two floating points make one vetrices 
+                          GL_FLOAT,
+                          GL_FALSE,//normalized
+                          sizeof(float)*5,//strides->distance. of the 0 vertex to 1 vertex 
+                          (void*)0);
 
-        //glDrawArrays(GL_TRIANGLES,0,3);
+        glEnableVertexAttribArray(1);//second attribute, color lecture 9(6:13)
+        glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(float)*5,(char*)(sizeof(float)*2));//->Lecture 9(6:44)
+
         glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,0);
 
         glDisableVertexAttribArray(0);
