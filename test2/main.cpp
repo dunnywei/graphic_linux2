@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include  <string>
 
 
 #include <GL/glew.h>
-
-
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <GL/glext.h>
 
 #include <GLFW/glfw3.h>
 GLFWwindow* window;
@@ -14,7 +16,14 @@ GLFWwindow* window;
 #include <glm/gtx/transform.hpp>
 
 using namespace glm;
+using namespace std;
 
+
+//extern const std::string vertexShaderCode;
+//extern const std::string fragmentShaderCode;
+
+extern const char* vertexShaderCode;
+extern const char* fragmentShaderCode;
 
 int main( void )
 {
@@ -75,9 +84,9 @@ int main( void )
         +0.0f, +0.0f, //0
         +1.0f,+0.0f,+0.0f, //For 0 vertex's color in RGB lec 9
         +1.0f,+1.0f,//1
-        +1.0f,+0.0f,+0.0f, //For 1 vertex's color in RGB lec 9
+        +0.0f,+1.0f,+0.0f, //For 1 vertex's color in RGB lec 9
         -1.0f,+1.0f,  //2
-        +1.0f,+0.0f,+0.0f, //For 2 vertex's color in RGB lec 9
+        +0.0f,+0.0f,+1.0f, //For 2 vertex's color in RGB lec 9
         -1.0f,-1.0f,//3
         +1.0f,+0.0f,+0.0f, //For 3 vertex's color in RGB lec 9  
         +1.0f,-1.0f,//4
@@ -98,10 +107,41 @@ int main( void )
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),indices,GL_STATIC_DRAW );
 
     
+    GLuint vertexShaderID=glCreateShader(GL_VERTEX_SHADER);
+    GLuint fragmentShaderID=glCreateShader(GL_FRAGMENT_SHADER);
+
+    const GLchar* adapter;
+
+    
+
+    //adapter=(const GLchar *)vertexShaderCode.c_str();
+
+    adapter=(const GLchar *)vertexShaderCode;
+
+
+    glShaderSource(vertexShaderID,1,&adapter,0);
+
+    //adapter=(const GLchar *)fragmentShaderCode.c_str();
+
+    adapter=(const GLchar *)fragmentShaderCode;
+
+    glShaderSource(fragmentShaderID,1,&adapter,0);
+    //starts here
+
+    glCompileShader(vertexShaderID);
+    glCompileShader(fragmentShaderID);
+
+    GLuint programID=glCreateProgram();
+    glAttachShader(programID,vertexShaderID);
+    glAttachShader(programID,fragmentShaderID);
+    glLinkProgram(programID);
 
 
     do{
         glClear( GL_COLOR_BUFFER_BIT );
+
+        
+        glUseProgram(programID);
 
                 
         glEnableVertexAttribArray(0);
@@ -131,10 +171,9 @@ int main( void )
     while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
            glfwWindowShouldClose(window) == 0 );
     
-
-    glDeleteBuffers(1,&vertexBufferID);
-    glDeleteBuffers(1,&indexBufferID);
-    glDeleteVertexArrays(1,&VertexArrayID);
+    glDeleteBuffers(1, &vertexBufferID);
+    glDeleteVertexArrays(1, &VertexArrayID);
+    glDeleteProgram(programID);
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();
