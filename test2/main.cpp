@@ -10,13 +10,15 @@
 #include <GL/glext.h>
 
 #include <GLFW/glfw3.h>
-GLFWwindow* window;
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <iostream>
 
 using namespace glm;
 using namespace std;
+
+GLFWwindow* window;
 
 
 //extern const std::string vertexShaderCode;
@@ -25,6 +27,30 @@ using namespace std;
 extern const char* vertexShaderCode;
 extern const char* fragmentShaderCode;
 
+
+bool checkShaderStatus(GLuint shaderID)
+{
+    //start of lecture 16
+    GLint compileStatus;
+    glGetShaderiv(shaderID,GL_COMPILE_STATUS,&compileStatus);
+    //it means that the last argument could be the index vector as compileStatus[10];(4:15)
+    //when we talk about array in OpenGL->it means list of sequence of int (4:21)
+    if(compileStatus!=GL_TRUE)//4:51
+    {
+        GLint infologLength;
+        glGetShaderiv(shaderID,GL_INFO_LOG_LENGTH,&infologLength); //lecture 16->6:25
+        GLchar *buffer=new GLchar[infologLength];
+
+        GLsizei buffersize;
+        glGetShaderInfoLog(shaderID,infologLength,&buffersize,buffer);//Lecture 16->8:51
+        std::cout<<"buffer is"<<buffer<<std::endl;//Lecture 16->9:48
+
+        delete [] buffer;
+        return false;
+    }
+    return true;
+    //end of lecture 16
+}
 int main( void )
 {
 
@@ -79,20 +105,13 @@ int main( void )
     glGenVertexArrays(1,&VertexArrayID);
     glBindVertexArray(VertexArrayID);
     
-    static const GLfloat verts[]={
-        
-        +0.0f, +0.0f, //0
+    static const GLfloat verts[]={       
+        +0.0f, +1.0f, //0
         +1.0f,+0.0f,+0.0f, //For 0 vertex's color in RGB lec 9
-        +1.0f,+1.0f,//1
-        +0.0f,+1.0f,+0.0f, //For 1 vertex's color in RGB lec 9
-        -1.0f,+1.0f,  //2
-        +0.0f,+0.0f,+1.0f, //For 2 vertex's color in RGB lec 9
-        -1.0f,-1.0f,//3
-        +1.0f,+0.0f,+0.0f, //For 3 vertex's color in RGB lec 9  
-        +1.0f,-1.0f,//4
-        +1.0f,+0.0f,+0.0f, //For 4 vertex's color in RGB lec 9
-        
-        
+        -1.0f,-1.0f,//1
+        +0.0f,+1.0f,+0.0f, //For 3 vertex's color in RGB lec 9  
+        +1.0f,-1.0f,//2
+        +0.0f,+0.0f,+1.0f, //For 4 vertex's color in RGB lec 9        
     };
 
     GLuint vertexBufferID;
@@ -100,7 +119,7 @@ int main( void )
     glBindBuffer(GL_ARRAY_BUFFER,vertexBufferID);
     glBufferData(GL_ARRAY_BUFFER,sizeof(verts),verts,GL_STATIC_DRAW);
 
-    GLushort indices[]= {0,1,2,0,3,4};
+    GLushort indices[]= {0,1,2};
     GLuint indexBufferID;
     glGenBuffers(1,&indexBufferID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
@@ -110,26 +129,30 @@ int main( void )
     GLuint vertexShaderID=glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShaderID=glCreateShader(GL_FRAGMENT_SHADER);
 
-    const GLchar* adapter;
+    const GLchar* adapter[1];
 
     
 
     //adapter=(const GLchar *)vertexShaderCode.c_str();
 
-    adapter=(const GLchar *)vertexShaderCode;
+    adapter[0]=(const GLchar *)vertexShaderCode;
 
 
-    glShaderSource(vertexShaderID,1,&adapter,0);
+    glShaderSource(vertexShaderID,1,adapter,0);
 
     //adapter=(const GLchar *)fragmentShaderCode.c_str();
 
-    adapter=(const GLchar *)fragmentShaderCode;
+    adapter[0]=(const GLchar *)fragmentShaderCode;
 
-    glShaderSource(fragmentShaderID,1,&adapter,0);
-    //starts here
+    glShaderSource(fragmentShaderID,1,adapter,0);
 
     glCompileShader(vertexShaderID);
     glCompileShader(fragmentShaderID);
+
+    if(!checkShaderStatus(vertexShaderID)||!checkShaderStatus(fragmentShaderID))
+    {
+        return 0;
+    }
 
     GLuint programID=glCreateProgram();
     glAttachShader(programID,vertexShaderID);
@@ -159,9 +182,13 @@ int main( void )
         glEnableVertexAttribArray(1);//second attribute, color lecture 9(6:13)
         glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(float)*5,(char*)(sizeof(float)*2));//->Lecture 9(6:44)
 
-        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,0);
+        //glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,0);
+        glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_SHORT,0);
+
 
         glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+
         
         // Swap buffers
         glfwSwapBuffers(window);
