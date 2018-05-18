@@ -51,12 +51,35 @@ bool checkShaderStatus(GLuint shaderID)
     return true;
     //end of lecture 16
 }
+
+bool checkProgramStatus(GLuint programID)
+{
+    //start of lecture 17
+    GLint linkStatus;
+    glGetProgramiv(programID,GL_LINK_STATUS,&linkStatus);
+
+    //it means that the last argument could be the index vector as linkStatus[10];(4:15)
+    //when we talk about array in OpenGL->it means list of sequence of int (4:21)
+    if(linkStatus!=GL_TRUE)//4:51
+    {
+        GLint infologLength;
+        glGetProgramiv(programID,GL_INFO_LOG_LENGTH,&infologLength); //lecture 16->6:25
+        GLchar *buffer=new GLchar[infologLength];
+        //GLchar *buffer=new GLchar[50];
+        GLsizei buffersize;
+        glGetProgramInfoLog(programID,infologLength,&buffersize,buffer);//Lecture 16->8:51
+        std::cout<<"@checkProgramStatus,buffer is"<<buffer<<endl;//Lecture 16->9:48
+
+        delete [] buffer;
+        return false;
+    }
+    return true;
+    //end of lecture 17
+    //return checkStatus(shaderID,glGetProgramiv,glGetProgramInfoLog,GL_LINK_STATUS);
+
+}
 int main( void )
 {
-
-
-
-
 
     // Initialise GLFW
     if( !glfwInit() )
@@ -151,13 +174,18 @@ int main( void )
 
     if(!checkShaderStatus(vertexShaderID)||!checkShaderStatus(fragmentShaderID))
     {
-        return 0;
+        return -1;
     }
 
     GLuint programID=glCreateProgram();
     glAttachShader(programID,vertexShaderID);
     glAttachShader(programID,fragmentShaderID);
     glLinkProgram(programID);
+
+    if(!checkProgramStatus(programID)) //Lecture 17->2:07
+    {
+        return -1;
+    }
 
 
     do{
