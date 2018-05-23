@@ -15,6 +15,8 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    shader.cpp
 
 HEADERS += \
+
+RESOURCES += VertexShaderCode.glsl \ 
+             FragmentShaderCode.glsl

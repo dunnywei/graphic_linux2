@@ -14,6 +14,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <iostream>
+#include <fstream>
 
 using namespace glm;
 using namespace std;
@@ -24,9 +25,23 @@ GLFWwindow* window;
 //extern const std::string vertexShaderCode;
 //extern const std::string fragmentShaderCode;
 
-extern const char* vertexShaderCode;
-extern const char* fragmentShaderCode;
+//extern const char* vertexShaderCode;
+//extern const char* fragmentShaderCode;
 
+std::string readShaderCode(const char* fileName)
+{
+   cout<<"file name is "<<fileName<<" starts "<<std::endl;
+   ifstream meInput(fileName);
+   if(!meInput.good())
+   {
+     std::cout<<"load file fail"<<fileName<<std::endl; //Lecture 16->03:21
+     exit(1);
+   }
+   
+   return std::string(
+      std::istreambuf_iterator<char>(meInput),
+      std::istreambuf_iterator<char>());//Lecture 16->06:53
+}
 
 bool checkShaderStatus(GLuint shaderID)
 {
@@ -152,20 +167,30 @@ int main( void )
     GLuint vertexShaderID=glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShaderID=glCreateShader(GL_FRAGMENT_SHADER);
 
+    
+
     const GLchar* adapter[1];
 
     
 
-    //adapter=(const GLchar *)vertexShaderCode.c_str();
 
-    adapter[0]=(const GLchar *)vertexShaderCode;
+    //Lecture 17->starts here
+
+
+    //adapter[0]=(const GLchar *)vertexShaderCode;
+
+    std::string temp=readShaderCode("VertexShaderCode.glsl");
+    adapter[0]=temp.c_str();//Lecture 16->05:00->starts here
 
 
     glShaderSource(vertexShaderID,1,adapter,0);
 
     //adapter=(const GLchar *)fragmentShaderCode.c_str();
 
-    adapter[0]=(const GLchar *)fragmentShaderCode;
+    //adapter[0]=(const GLchar *)fragmentShaderCode;
+
+    temp=readShaderCode("FragmentShaderCode.glsl");
+    adapter[0]=temp.c_str();
 
     glShaderSource(fragmentShaderID,1,adapter,0);
 
