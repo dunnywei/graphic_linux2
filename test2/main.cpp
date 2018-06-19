@@ -16,10 +16,14 @@
 #include <iostream>
 #include <fstream>
 
+#define RED_TRIANGLE_Z +0.5f
+#define BLUE_TRIANGLE_Z -0.5f
+
 using namespace glm;
 using namespace std;
 
 GLFWwindow* window;
+
 
 
 //extern const std::string vertexShaderCode;
@@ -143,13 +147,28 @@ int main( void )
     glGenVertexArrays(1,&VertexArrayID);
     glBindVertexArray(VertexArrayID);
     
-    static const GLfloat verts[]={       
+    static const GLfloat verts[]={
+    /*       
         +0.0f, +1.0f, //0
         +1.0f,+0.0f,+0.0f, //For 0 vertex's color in RGB lec 9
         -1.0f,-1.0f,//1
         +0.0f,+1.0f,+0.0f, //For 3 vertex's color in RGB lec 9  
         +1.0f,-1.0f,//2
-        +0.0f,+0.0f,+1.0f, //For 4 vertex's color in RGB lec 9        
+        +0.0f,+0.0f,+1.0f, //For 4 vertex's color in RGB lec 9
+    */
+       -1.0f, -1.0f, RED_TRIANGLE_Z,
+        +1.0f, +0.0f, +0.0f,
+        +0.0f, +1.0f, RED_TRIANGLE_Z,
+        +1.0f, +0.0f, +0.0f,
+        +1.0f, -1.0f, RED_TRIANGLE_Z,
+        +1.0f, +0.0f, +0.0f,
+
+        -1.0f, +1.0f, BLUE_TRIANGLE_Z,
+        +0.0f, +0.0f, +1.0f,
+        +0.0f, -1.0f, BLUE_TRIANGLE_Z,
+        +0.0f, +0.0f, +1.0f,
+        +1.0f, +1.0f, BLUE_TRIANGLE_Z,
+        +0.0f, +0.0f, +1.0f,        
     };
 
     GLuint vertexBufferID;
@@ -157,7 +176,7 @@ int main( void )
     glBindBuffer(GL_ARRAY_BUFFER,vertexBufferID);
     glBufferData(GL_ARRAY_BUFFER,sizeof(verts),verts,GL_STATIC_DRAW);
 
-    GLushort indices[]= {0,1,2};
+    GLushort indices[]= {0,1,2,3,4,5};
     GLuint indexBufferID;
     glGenBuffers(1,&indexBufferID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
@@ -226,17 +245,17 @@ int main( void )
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indexBufferID);
         
         glVertexAttribPointer(0, 
-                          2, //Two floating points make one vetrices 
+                          3, //Two floating points make one vetrices 
                           GL_FLOAT,
                           GL_FALSE,//normalized
-                          sizeof(float)*5,//strides->distance. of the 0 vertex to 1 vertex 
+                          sizeof(float)*6,//strides->distance. of the 0 vertex to 1 vertex 
                           (void*)0);
 
         glEnableVertexAttribArray(1);//second attribute, color lecture 9(6:13)
-        glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(float)*5,(char*)(sizeof(float)*2));//->Lecture 9(6:44)
+        glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(float)*6,(char*)(sizeof(float)*2));//->Lecture 9(6:44)
 
-        //glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,0);
-        glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_SHORT,0);
+        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,0);
+        //glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_SHORT,0);
 
 
         glDisableVertexAttribArray(0);
